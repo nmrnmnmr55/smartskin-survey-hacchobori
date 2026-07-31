@@ -12,9 +12,35 @@ from datetime import datetime
 
 # ▼▼▼ 院別設定（ここだけ院ごとに変える） ▼▼▼
 WORKSHEET_NAME = 'Hacchobori'
-# TODO: 八丁堀GBPの口コミリンクに差し替える（GBPオーナー確認/公開後に g.page/r/XXXX/review が発行される）
-#       神保町=https://g.page/r/CZ9u7jtKueKvEBM/review / 横浜=https://g.page/r/CfKMnigxxDPWEBI/review
-REVIEW_URL = 'https://g.page/r/REPLACE_WITH_HACCHOBORI_REVIEW_ID/review'
+
+# Google口コミ誘導リンク。
+#
+# None にすると高評価ページで口コミ誘導を一切出さず、お礼のみを表示する。
+# 2026-07-31 時点の八丁堀は None。理由は、GBPのオーナー確認（動画）が未完了で
+# Googleが口コミURLをまだ発番していないため。壊れたリンクを出さない。
+#
+# ⚠️ **Googleマップの検索型URL等で代用してはならない。**
+#    未公開の八丁堀名で検索すると神保町院に解決し、八丁堀の口コミが神保町に付く（2026-07-31 実測）。
+#
+# ▼ 再開手順（GBPのオーナー確認が通ったら、これをやる）
+#   1. 発番されたかを確認する:
+#        cd スマスキ関連/06_IT・システム/システム開発/20241201_顧客満足度システム
+#        python check_review_url.py
+#      → 「スマートスキンクリニック 八丁堀院」の「口コミURL」に
+#        https://search.google.com/local/writereview?placeid=... が出れば発番済み。
+#        「(なし)」ならまだ認証が通っていないので、何もせず待つ。
+#   2. 出力されたURLを、下の REVIEW_URL に文字列として設定する（None を置き換える）。
+#   3. GitHub リポジトリ nmrnmnmr55/smartskin-survey-hacchobori の app_hacchobori.py へ push する。
+#      Streamlit Cloud が自動で再デプロイする（数分）。
+#   4. https://smartskin-survey-hacchobori.streamlit.app/?d=TEST を開き、
+#      「非常に満足」→ 口コミリンクが出て、八丁堀のGoogleページに飛ぶことを目視確認する。
+#      ※ 神保町・横浜のページに飛んだら即座に None へ戻すこと。
+#   5. README_顧客満足度システム_全体設計.md の該当箇所を「差替済」に更新する。
+#
+# 参考（発番済みの既存院）:
+#   神保町 = https://search.google.com/local/writereview?placeid=ChIJp_i6nMGNGGARn27uO0q54q8
+#   横浜   = https://search.google.com/local/writereview?placeid=ChIJ-_X7hphdGGAR8oyeKDHEM9Y
+REVIEW_URL = None
 # ▲▲▲ 院別設定ここまで ▲▲▲
 
 # カスタムCSSの適用
@@ -128,9 +154,17 @@ def show_page_1():
 
 def show_page_2():
     st.write("貴重なご意見をありがとうございます！")
-    st.write("★以下に口コミ記載＆スタッフ提示で、サンソリット スキンピールバー(約3,000円相当)を特別プレゼント！★")
-    st.markdown(f"[口コミ記入ページを開く]({REVIEW_URL})")
-    st.write("詳細はスタッフまでお尋ねください。")
+    st.write("いただいたお声は、より良いサービスの提供に活かしてまいります。")
+    st.write("引き続きどうぞよろしくお願いいたします。")
+
+    # 2026-07-31: 口コミ誘導を一時停止している（REVIEW_URL = None）。
+    # 八丁堀のGBPがオーナー確認（動画）を通過すると、Googleが口コミURLを発番する。
+    # 発番後の再開手順は本ファイル冒頭のコメントと
+    # ../README_顧客満足度システム_全体設計.md「Google口コミリンクの再開手順」を参照。
+    if REVIEW_URL:
+        st.write("★以下に口コミ記載＆スタッフ提示で、サンソリット スキンピールバー(約3,000円相当)を特別プレゼント！★")
+        st.markdown(f"[口コミ記入ページを開く]({REVIEW_URL})")
+        st.write("詳細はスタッフまでお尋ねください。")
 
 def show_page_3():
     st.write("この度、満足いただけなかったこと誠に申し訳ございません。心よりお詫び申し上げます。")
