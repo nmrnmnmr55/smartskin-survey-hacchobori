@@ -40,7 +40,7 @@ WORKSHEET_NAME = 'Hacchobori'
 # 参考（発番済みの既存院）:
 #   神保町 = https://search.google.com/local/writereview?placeid=ChIJp_i6nMGNGGARn27uO0q54q8
 #   横浜   = https://search.google.com/local/writereview?placeid=ChIJ-_X7hphdGGAR8oyeKDHEM9Y
-REVIEW_URL = None
+REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJ2Y7Xmp2JGGARNjwkwKEEZX0"
 # ▲▲▲ 院別設定ここまで ▲▲▲
 
 # カスタムCSSの適用
@@ -157,10 +157,9 @@ def show_page_2():
     st.write("いただいたお声は、より良いサービスの提供に活かしてまいります。")
     st.write("引き続きどうぞよろしくお願いいたします。")
 
-    # 2026-07-31: 口コミ誘導を一時停止している（REVIEW_URL = None）。
-    # 八丁堀のGBPがオーナー確認（動画）を通過すると、Googleが口コミURLを発番する。
-    # 発番後の再開手順は本ファイル冒頭のコメントと
-    # ../README_顧客満足度システム_全体設計.md「Google口コミリンクの再開手順」を参照。
+    # 2026-08-11: 八丁堀GBPがオーナー確認（動画）を通過し口コミURLが発番されたため再開。
+    # URLはGBP APIの newReviewUri 実測値（check_review_url.py で再取得できる）。
+    # ⚠️ マップ検索型URLで代用しない（神保町に解決し他院へ口コミが付く）。
     if REVIEW_URL:
         st.write("★以下に口コミ記載＆スタッフ提示で、サンソリット スキンピールバー(約3,000円相当)を特別プレゼント！★")
         st.markdown(f"[口コミ記入ページを開く]({REVIEW_URL})")
