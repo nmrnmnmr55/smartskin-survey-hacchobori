@@ -40,8 +40,28 @@ WORKSHEET_NAME = 'Hacchobori'
 # 参考（発番済みの既存院）:
 #   神保町 = https://search.google.com/local/writereview?placeid=ChIJp_i6nMGNGGARn27uO0q54q8
 #   横浜   = https://search.google.com/local/writereview?placeid=ChIJ-_X7hphdGGAR8oyeKDHEM9Y
-REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJ2Y7Xmp2JGGARNjwkwKEEZX0"
+# 2026-09-15: 八丁堀院のGBPが「インセンティブ付き口コミ」の報告で制限され、30日間の新規投稿停止中。
+# 制限中はリンクを出さない（投稿できないページへ誘導しない）。解除の目安は2026-10-15。
+# 解除を確認したら、下の None を次のURLに戻して push する:
+#   https://search.google.com/local/writereview?placeid=ChIJ2Y7Xmp2JGGARNjwkwKEEZX0
+REVIEW_URL = None
 # ▲▲▲ 院別設定ここまで ▲▲▲
+
+def show_review_request():
+    """Google口コミのお願い。満足度に関係なく、全員に同じ文面・同じリンクを出す。
+
+    2026-09-15: 特典（プレゼント）と、満足度に応じた出し分けを全院で廃止した。再導入しない。
+    理由: Googleのポリシーはインセンティブ付き口コミと選別的な依頼を禁止しており、
+    八丁堀院のプロフィールが同日に制限（5つ星43件削除・30日投稿停止）を受けたため。
+    REVIEW_URL が None の院（口コミURL未発番・投稿制限中）では何も出さない。
+    """
+    if not REVIEW_URL:
+        return
+    st.write("Smart skin CLINICは、患者様のお声とともに育ってきたクリニックです。")
+    st.write("率直なご感想を、Googleのクチコミで教えていただけると嬉しいです。")
+    st.write("ご意見はひとつ残らず読ませていただき、次のご来院に活かしてまいります。")
+    st.markdown(f"[クチコミを書く]({REVIEW_URL})")
+
 
 # カスタムCSSの適用
 st.markdown("""
@@ -153,22 +173,9 @@ def show_page_1():
         st.rerun()
 
 def show_page_2():
-    st.write("貴重なご意見をありがとうございます！")
+    st.write("ご回答ありがとうございました！")
     st.write("いただいたお声は、より良いサービスの提供に活かしてまいります。")
-    st.write("引き続きどうぞよろしくお願いいたします。")
-
-    # 2026-08-11: 八丁堀GBPがオーナー確認（動画）を通過し口コミURLが発番されたため再開。
-    # URLはGBP APIの newReviewUri 実測値（check_review_url.py で再取得できる）。
-    # ⚠️ マップ検索型URLで代用しない（神保町に解決し他院へ口コミが付く）。
-    if REVIEW_URL:
-        # 2026-08-16: クチコミ特典を &DR. BAKU に統一（院内POPと同一の品目・金額）。
-        # 期間限定の表現（開院記念 等）は使わない。特典が続く限りこのまま掲出できる文面にしている。
-        # 特典そのものが変わったときだけ、下の2行と院内POPを同時に差し替える。
-        # ⚠️ 八丁堀限定の特典。神保町・横浜・大宮のアプリは変更しない。
-        st.write("★Googleクチコミのご投稿で、&DR. BAKU 1本プレゼント！★")
-        st.write("バクチオール美容液 30mL（7,920円 税込 相当）")
-        st.markdown(f"[口コミ記入ページを開く]({REVIEW_URL})")
-        st.write("ご投稿後、受付にお見せください。※おひとり様1本まで")
+    show_review_request()
 
 def show_page_3():
     st.write("この度、満足いただけなかったこと誠に申し訳ございません。心よりお詫び申し上げます。")
@@ -186,6 +193,7 @@ def show_page_4():
     st.write("確かに受領いたしました。")
     st.write("頂いた貴重なご意見をふまえ、少しでも良いサービスを提供できるように改善に努めてまいります。")
     st.write("引き続きどうぞよろしくお願いいたします。")
+    show_review_request()
 
     if st.button("最初に戻る", key="return_button"):
         st.session_state.page = 1  # 最初のページに戻る
